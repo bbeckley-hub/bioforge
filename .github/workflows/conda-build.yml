@@ -1,1 +1,59 @@
-# paste the entire block above
+name: Build and upload to bioforge channel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'recipes/**'
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        recipe: [kleboscope]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: 3.9
+          channels: conda-forge,bioconda,defaults
+          channel-priority: flexible
+
+      - name: Install conda-build and anaconda-client
+        run: conda install -y conda-build anaconda-client
+
+      - name: Build recipe
+        id: build
+        run: |
+          conda build recipes/${{ matrix.recipe }}
+          PACKAGE=$(conda build recipes/${{ matrix.recipe }} --output)
+          echo "package_path=$PACKAGE" >> $GITHUB_OUTPUT
+
+      - name: License whitelist check
+        run: |
+          LICENSE=$(grep '^license:' recipes/${{ matrix.recipe }}/meta.yaml | cut -d: -f2 | tr -d ' ')
+          ALLOWED="MIT BSD-3 Apache-2.0 GPL-3"
+          if [[ ! " $ALLOWED " =~ " $LICENSE " ]]; then
+            echo "License $LICENSE not allowed"
+            exit 1
+          fi
+
+      - name: Security scan (basic)
+        run: conda inspect objects ${{ steps.build.outputs.package_path }} || true
+
+      - name: Test built package
+        run: |
+          PACKAGE="${{ steps.build.outputs.package_path }}"
+          conda create -n test_env -y python=3.9
+          conda install -n test_env -y "$PACKAGE"
+          conda run -n test_env kleboscope --help
+
+      - name: Upload to bioforge channel (on push to main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: anaconda upload --user bioforge ${{ steps.build.outputs.package_path }} --label main
