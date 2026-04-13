@@ -206,3 +206,4 @@ It is designed to complement it by becoming:
 ---
 
 **Start using BioForge today – publish your tool in minutes, not months.**
+
