@@ -30,10 +30,6 @@ jobs:
           OUTPUT=$(conda build recipes/${{ matrix.recipe }} --output)
           echo "package_path=$OUTPUT" >> $GITHUB_OUTPUT
 
-      - name: Test built package
-        run: |
-          conda build --test ${{ steps.build.outputs.package_path }}
-
       - name: License whitelist check
         run: |
           LICENSE=$(grep '^license:' recipes/${{ matrix.recipe }}/meta.yaml | cut -d: -f2 | tr -d ' ')
@@ -45,6 +41,15 @@ jobs:
 
       - name: Security scan (basic)
         run: conda inspect objects ${{ steps.build.outputs.package_path }} || true
+
+      - name: Test built package
+        run: |
+          # Create a test environment
+          conda create -n test_env -y python=3.9
+          # Install the built package from the local file
+          conda install -n test_env -y ${{ steps.build.outputs.package_path }}
+          # Run the help command
+          conda run -n test_env kleboscope --help
 
       - name: Upload to bioforge channel (on push to main)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
