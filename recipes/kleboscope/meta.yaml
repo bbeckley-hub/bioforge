@@ -9,7 +9,7 @@ license: MIT
 
 source:
   url: https://github.com/bbeckley-hub/kleboscope/archive/refs/tags/v{{ version }}.zip
-  sha256: sha256: 8f9c99aab836599fa1da11888c8998725f4ed11d5b2a67bdbd436c5cfae66cf1
+  sha256: 8f9c99aab836599fa1da11888c8998725f4ed11d5b2a67bdbd436c5cfae66cf1
 
 build:
   noarch: python
