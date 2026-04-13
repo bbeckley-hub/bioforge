@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        recipe: [kleboscope]   # Will be filled manually; you can add recipe names here
+        recipe: [kleboscope]   
     steps:
       - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v3
@@ -39,7 +39,10 @@ jobs:
       - name: Security scan (basic)
         run: conda inspect objects ${{ steps.build.outputs.package_path }} || true
       - name: Test installation in fresh environment
-        run: conda create -n test -c conda-forge -c bioforge ${{ matrix.recipe }} --dry-run
+        run: |
+         ENV_NAME="test_${{ github.run_id }}"
+         conda create -n $ENV_NAME -c conda-forge -c bioforge ${{ matrix.recipe }} --dry-run
+         conda env remove -n $ENV_NAME -y || true
       - name: Upload to bioforge channel (on push to main)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
