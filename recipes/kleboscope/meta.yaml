@@ -8,8 +8,8 @@ package:
 license: MIT
 
 source:
-  url: https://github.com/bbeckley-hub/kleboscope/archive/refs/tags/v{{ version }}.zip
-  sha256: a5180fd9e8d0fad68289bab66987a639e46303a084d1ba8af1ff8a3dc3d207df
+  url: https://github.com/bbeckley-hub/kleboscope/archive/refs/tags/v.{{ version }}.zip
+  sha256: d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed
 
 build:
   noarch: python
