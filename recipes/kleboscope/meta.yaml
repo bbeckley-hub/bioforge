@@ -51,8 +51,6 @@ requirements:
     - git
 
 test:
-  imports:
-    - kleboscope
   commands:
     - kleboscope --help
 
@@ -65,10 +63,4 @@ about:
 extra:
   recipe-maintainers:
     - bbeckley-hub
-# trigger
-# trigger
-# trigger
-# trigger
-# trigger
-# trigger
-# trigger
+
