@@ -5,16 +5,16 @@ package:
   name: {{ name|lower }}
   version: {{ version }}
 
+license: MIT   # top‑level for the CI license check
+
 source:
-  url: https://github.com/bbeckley-hub/kleboscope/archive/main.tar.gz
-  sha256: ff9053d0b133337154a67d0bdab8793e0501cc4005d7452be0ccfbe265b38c54
+  url: https://github.com/bbeckley-hub/kleboscope/archive/refs/tags/v{{ version }}.zip
+  sha256: a5180fd9e8d0fad68289bab66987a639e46303a084d1ba8af1ff8a3dc3d207df
 
 build:
   noarch: python
   number: 0
   script: {{ PYTHON }} -m pip install . -vv
-  entry_points:
-    - kleboscope = kleboscope.kleboscope:main
 
 requirements:
   host:
@@ -48,7 +48,7 @@ requirements:
     - perl-data-dumper
     - perl-getopt-long
     - perl-file-which
-    - git   # needed for database.sh
+    - git
 
 test:
   imports:
